@@ -9,6 +9,7 @@ variable "name_prefix" {
 }
 variable "global_tags" {
   description = "Global tags configured for all provisioned resources"
+  type = map(string)
 }
 variable "ssh_key_name" {
   description = "Name of the SSH key pair existing in AWS key pairs and used to authenticate to VM-Series or test boxes"
