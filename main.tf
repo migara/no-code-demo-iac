@@ -1,7 +1,7 @@
 ### VPCS ###
 
 module "vpc" {
-  source = "../../modules/vpc"
+    source  = "PaloAltoNetworks/swfw-modules/aws//modules/vpc"
 
   for_each = var.vpcs
 
@@ -19,7 +19,7 @@ module "vpc" {
 
 module "subnet_sets" {
   for_each = toset(flatten([for _, v in { for vk, vv in var.vpcs : vk => distinct([for sk, sv in vv.subnets : "${vk}-${sv.set}"]) } : v]))
-  source   = "../../modules/subnet_set"
+  source  = "PaloAltoNetworks/swfw-modules/aws//modules/subnet_set"
 
   name                = split("-", each.key)[1]
   vpc_id              = module.vpc[split("-", each.key)[0]].id
@@ -70,7 +70,7 @@ locals {
 
 module "vpc_routes" {
   for_each = { for route in local.vpc_routes : "${route.subnet_key}_${route.to_cidr}" => route }
-  source   = "../../modules/vpc_route"
+  source  = "PaloAltoNetworks/swfw-modules/aws//modules/vpc_route"
 
   route_table_ids = module.subnet_sets[each.value.subnet_key].unique_route_table_ids
   to_cidr         = each.value.to_cidr
@@ -80,7 +80,7 @@ module "vpc_routes" {
 ### NATGW ###
 
 module "natgw_set" {
-  source = "../../modules/nat_gateway_set"
+  source  = "PaloAltoNetworks/swfw-modules/aws//modules/nat_gateway_set"
 
   for_each = var.natgws
 
@@ -90,7 +90,7 @@ module "natgw_set" {
 ### TGW ###
 
 module "transit_gateway" {
-  source = "../../modules/transit_gateway"
+ source  = "PaloAltoNetworks/swfw-modules/aws//modules/transit_gateway"
 
   create       = var.tgw.create
   id           = var.tgw.id
@@ -102,7 +102,7 @@ module "transit_gateway" {
 ### TGW ATTACHMENTS ###
 
 module "transit_gateway_attachment" {
-  source = "../../modules/transit_gateway_attachment"
+ source  = "PaloAltoNetworks/swfw-modules/aws//modules/transit_gateway_attachment"
 
   for_each = var.tgw.attachments
 
@@ -133,7 +133,7 @@ resource "aws_ec2_transit_gateway_route" "from_security_to_panorama" {
 ### GWLB ###
 
 module "gwlb" {
-  source = "../../modules/gwlb"
+ source  = "PaloAltoNetworks/swfw-modules/aws//modules/gwlb"
 
   for_each = var.gwlbs
 
@@ -155,7 +155,7 @@ resource "aws_lb_target_group_attachment" "this" {
 ### GWLB ENDPOINTS ###
 
 module "gwlbe_endpoint" {
-  source = "../../modules/gwlb_endpoint_set"
+ source  = "PaloAltoNetworks/swfw-modules/aws//modules/gwlb_endpoint_set"
 
   for_each = var.gwlb_endpoints
 
@@ -246,7 +246,7 @@ resource "aws_instance" "spoke_vms" {
 ### SPOKE INBOUND NETWORK LOAD BALANCER ###
 
 module "app_lb" {
-  source = "../../modules/nlb"
+ source  = "PaloAltoNetworks/swfw-modules/aws//modules/nlb"
 
   for_each = var.spoke_lbs
 
