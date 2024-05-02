@@ -370,7 +370,7 @@ locals {
 
 module "vmseries" {
   for_each = { for vmseries in local.vmseries_instances : "${vmseries.group}-${vmseries.instance}" => vmseries }
-  source   = "../../modules/vmseries"
+  source   = "PaloAltoNetworks/swfw-modules/aws//modules/vmseries"
 
   name             = "${var.name_prefix}${each.key}"
   vmseries_version = each.value.common.panos_version
@@ -396,7 +396,7 @@ module "vmseries" {
 
 module "public_alb" {
   for_each = { for k, v in var.vmseries : k => v }
-  source   = "../../modules/alb"
+  source   = "PaloAltoNetworks/swfw-modules/aws//modules/alb"
 
   lb_name         = "${var.name_prefix}${each.value.application_lb.name}"
   subnets         = { for k, v in module.subnet_sets["security_vpc-alb"].subnets : k => { id = v.id } }
@@ -410,7 +410,7 @@ module "public_alb" {
 
 module "public_nlb" {
   for_each = { for k, v in var.vmseries : k => v }
-  source   = "../../modules/nlb"
+  source   = "PaloAltoNetworks/swfw-modules/aws//modules/nlb"
 
   name        = "${var.name_prefix}${each.value.network_lb.name}"
   internal_lb = false
